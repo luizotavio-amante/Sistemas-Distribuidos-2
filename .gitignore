@@ -1,0 +1,21 @@
+#Dependências
+node_modules/
+
+#Ambiente Virtual Python
+.venv/
+venv/
+
+#variaveis de ambiente
+.env
+
+# Cache
+__pycache__/
+.pytest_cache/
+
+#IDE
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
