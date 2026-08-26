@@ -1,6 +1,8 @@
 # Variáveis
 APP_NAME = sistemas-distribuidos
-PYTHON = python
+PYTHON = poetry run python
+POETRY = poetry
+UVICORN = poetry run uvicorn
 
 # Comando padrão
 all: help
@@ -16,21 +18,21 @@ help:
 	@echo "  make clean    - Limpa arquivos temporários"
 
 install:
-	@echo "Instalando dependências..."
+	cd backend && $(POETRY) install
 
 test:
-	@echo "Executando testes..."
+	cd backend && $(POETRY) run pytest
 
 lint:
-	@echo "Verificando código..."
+	cd backend && $(POETRY) run ruff check .
 
 format:
-	@echo "Formatando código..."
+	cd backend && $(POETRY) run ruff format .
 
 run:
-	@echo "Iniciando $(APP_NAME)..."
+	cd backend && $(UVICORN) main:app --reload
 
 clean:
-	@echo "Limpando arquivos temporários..."
+	cd backend && $(PYTHON) -c "import shutil; shutil.rmtree('__pycache__', ignore_errors=True)"
 
 .PHONY: all help install test lint format run clean
