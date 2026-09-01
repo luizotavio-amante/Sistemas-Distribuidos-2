@@ -16,6 +16,11 @@ help:
 	@echo "  make format   - Formata o código"
 	@echo "  make run      - Inicia o servidor"
 	@echo "  make clean    - Limpa arquivos temporários"
+	@echo "  make build    - Cria as imagens Docker"
+	@echo "  make up       - Inicia os containers"
+	@echo "  make down     - Para os containers"
+	@echo "  make logs     - Exibe os logs dos containers"
+	@echo "  make ps       - Exibe o status dos containers"
 
 install:
 	cd backend && $(POETRY) install
@@ -35,4 +40,20 @@ run:
 clean:
 	cd backend && $(PYTHON) -c "import shutil; shutil.rmtree('__pycache__', ignore_errors=True)"
 
-.PHONY: all help install test lint format run clean
+# Docker
+build:
+	docker compose build
+
+up:
+	docker compose up -d
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
+
+ps:
+	docker compose ps
+
+.PHONY: all help install test lint format run clean build up down logs ps
