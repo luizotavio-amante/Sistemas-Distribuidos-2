@@ -1,59 +1,65 @@
-# Variáveis
-APP_NAME = sistemas-distribuidos
-PYTHON = poetry run python
-POETRY = poetry
-UVICORN = poetry run uvicorn
+.PHONY: help install test lint format run up up-build down build logs logs-api ps shell clean
 
-# Comando padrão
-all: help
+POETRY := poetry -C backend
+PYTEST := $(POETRY) run python -m pytest
+RUFF := $(POETRY) run ruff
+UVICORN := $(POETRY) run uvicorn
 
-# Ajuda
 help:
-	@echo "Comandos disponíveis:"
-	@echo "  make install  - Instala as dependências"
-	@echo "  make test     - Executa testes"
-	@echo "  make lint     - Verifica o código"
-	@echo "  make format   - Formata o código"
-	@echo "  make run      - Inicia o servidor"
-	@echo "  make clean    - Limpa arquivos temporários"
-	@echo "  make build    - Cria as imagens Docker"
-	@echo "  make up       - Inicia os containers"
-	@echo "  make down     - Para os containers"
-	@echo "  make logs     - Exibe os logs dos containers"
-	@echo "  make ps       - Exibe o status dos containers"
+	@echo "Comandos disponiveis:"
+	@echo "  make install  - instala as dependencias do backend"
+	@echo "  make test     - executa os testes"
+	@echo "  make lint     - verifica o codigo com Ruff"
+	@echo "  make format   - formata o codigo com Ruff"
+	@echo "  make run      - inicia o backend localmente"
+	@echo "  make up       - sobe os containers"
+	@echo "  make up-build - reconstroi a imagem e sobe os containers"
+	@echo "  make down     - para e remove os containers"
+	@echo "  make build    - constroi as imagens"
+	@echo "  make logs     - acompanha os logs"
+	@echo "  make logs-api - acompanha apenas os logs da API"
+	@echo "  make ps       - mostra o status dos serviços"
+	@echo "  make shell    - abre um shell no container da API"
+	@echo "  make clean    - remove containers, rede e volumes do Compose"
 
 install:
-	cd backend && $(POETRY) install
+	$(POETRY) install
 
 test:
-	cd backend && $(POETRY) run pytest
+	$(PYTEST)
 
 lint:
-	cd backend && $(POETRY) run ruff check .
+	$(RUFF) check .
 
 format:
-	cd backend && $(POETRY) run ruff format .
+	$(RUFF) format .
 
 run:
-	cd backend && $(UVICORN) main:app --reload
-
-clean:
-	cd backend && $(PYTHON) -c "import shutil; shutil.rmtree('__pycache__', ignore_errors=True)"
-
-# Docker
-build:
-	docker compose build
+	$(UVICORN) app.main:app --reload
 
 up:
 	docker compose up -d
 
+up-build:
+	docker compose up -d --build
+
 down:
 	docker compose down
+
+build:
+	docker compose build
 
 logs:
 	docker compose logs -f
 
+logs-api:
+	docker compose logs -f api
+
 ps:
 	docker compose ps
 
-.PHONY: all help install test lint format run clean build up down logs ps
+shell:
+	docker compose exec api sh
+
+clean:
+	docker compose down -v
