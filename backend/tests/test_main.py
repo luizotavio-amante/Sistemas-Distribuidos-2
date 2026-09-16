@@ -1,6 +1,6 @@
 import pytest
 
-from app.main import somar, subtrair, multiplicar, dividir, eh_par
+from app.main import dividir, eh_par, multiplicar, somar, subtrair
 
 
 @pytest.fixture
