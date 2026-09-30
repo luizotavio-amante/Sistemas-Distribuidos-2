@@ -20,10 +20,7 @@ def list_users(
     users = get_users()
 
     if name:
-        users = [
-            user for user in users
-            if name.lower() in user.name.lower()
-        ]
+        users = [user for user in users if name.lower() in user.name.lower()]
 
     return users
 

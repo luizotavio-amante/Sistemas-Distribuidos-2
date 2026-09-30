@@ -1,6 +1,5 @@
 from app.schemas.user import User, UserCreate, UserPatch
 
-
 users: list[User] = []
 
 
