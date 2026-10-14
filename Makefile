@@ -1,16 +1,18 @@
-.PHONY: help install test lint format run up up-build down build logs logs-api ps shell clean
+
+.PHONY: help install test lint format migrate run up up-build down build logs logs-api ps shell clean
 
 POETRY := poetry -C backend
 PYTEST := $(POETRY) run python -m pytest
 RUFF := $(POETRY) run ruff
-UVICORN := $(POETRY) run uvicorn
+ALEMBIC := $(POETRY) run alembic
 
 help:
 	@echo "Comandos disponiveis:"
 	@echo "  make install  - instala as dependencias do backend"
 	@echo "  make test     - executa os testes"
-	@echo "  make lint     - verifica o codigo com Ruff"
-	@echo "  make format   - formata o codigo com Ruff"
+	@echo "  make lint     - verifica o codigo e a formatacao"
+	@echo "  make format   - corrige e formata o codigo"
+	@echo "  make migrate  - aplica as migrations do Alembic"
 	@echo "  make run      - inicia o backend localmente"
 	@echo "  make up       - sobe os containers"
 	@echo "  make up-build - reconstroi a imagem e sobe os containers"
@@ -18,24 +20,29 @@ help:
 	@echo "  make build    - constroi as imagens"
 	@echo "  make logs     - acompanha os logs"
 	@echo "  make logs-api - acompanha apenas os logs da API"
-	@echo "  make ps       - mostra o status dos serviços"
+	@echo "  make ps       - mostra o status dos servicos"
 	@echo "  make shell    - abre um shell no container da API"
 	@echo "  make clean    - remove containers, rede e volumes do Compose"
 
 install:
-	$(POETRY) install
+	$(POETRY) install --no-root
 
 test:
-	$(PYTEST)
+	$(PYTEST) -v
 
 lint:
-	$(RUFF) check .
+	$(RUFF) check app tests
+	$(RUFF) format --check app tests
 
 format:
-	$(RUFF) format .
+	$(RUFF) check app tests --fix
+	$(RUFF) format app tests
+
+migrate:
+	cd backend && poetry run alembic upgrade head
 
 run:
-	$(UVICORN) app.main:app --reload
+	cd backend && poetry run uvicorn app.main:app --reload
 
 up:
 	docker compose up -d

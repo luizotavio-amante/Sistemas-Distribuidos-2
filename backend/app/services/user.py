@@ -1,67 +1,75 @@
-from app.schemas.user import User, UserCreate, UserPatch
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
-users: list[User] = []
+from app.repositories import user as user_repository
+from app.schemas.user import UserCreate, UserPatch
 
 
-def get_users() -> list[User]:
+def get_users(db: Session, name: str | None = None):
+    users = user_repository.get_users(db)
+
+    if name:
+        users = [user for user in users if name.lower() in user.name.lower()]
+
     return users
 
 
-def get_user(user_id: int) -> User | None:
-    for user in users:
-        if user.id == user_id:
-            return user
-
-    return None
-
-
-def create_user(user: UserCreate) -> User:
-    new_id = len(users) + 1
-
-    new_user = User(
-        id=new_id,
-        name=user.name,
-        email=user.email,
-    )
-
-    users.append(new_user)
-
-    return new_user
-
-
-def update_user(user_id: int, name: str, email: str) -> User | None:
-    user = get_user(user_id)
+def get_user(db: Session, user_id: int):
+    user = user_repository.get_user_by_id(db, user_id)
 
     if user is None:
-        return None
-
-    user.name = name
-    user.email = email
+        raise HTTPException(
+            status_code=404,
+            detail="Usuário não encontrado",
+        )
 
     return user
 
 
-def patch_user(user_id: int, data: UserPatch) -> User | None:
-    user = get_user(user_id)
+def create_user(db: Session, user: UserCreate):
+    existing_user = user_repository.get_user_by_email(db, user.email)
 
-    if user is None:
-        return None
+    if existing_user:
+        raise HTTPException(
+            status_code=409,
+            detail="E-mail já cadastrado",
+        )
 
-    if data.name is not None:
-        user.name = data.name
-
-    if data.email is not None:
-        user.email = data.email
-
-    return user
+    return user_repository.create_user(db, user)
 
 
-def delete_user(user_id: int) -> bool:
-    user = get_user(user_id)
+def update_user(db: Session, user_id: int, user: UserCreate):
+    get_user(db, user_id)
 
-    if user is None:
-        return False
+    existing_user = user_repository.get_user_by_email(db, user.email)
 
-    users.remove(user)
+    if existing_user and existing_user.id != user_id:
+        raise HTTPException(
+            status_code=409,
+            detail="E-mail já cadastrado",
+        )
 
-    return True
+    return user_repository.update_user(db, user_id, user)
+
+
+def patch_user(db: Session, user_id: int, user: UserPatch):
+    get_user(db, user_id)
+
+    if user.email is not None:
+        existing_user = user_repository.get_user_by_email(db, user.email)
+
+        if existing_user and existing_user.id != user_id:
+            raise HTTPException(
+                status_code=409,
+                detail="E-mail já cadastrado",
+            )
+
+    return user_repository.update_user(db, user_id, user)
+
+
+def delete_user(db: Session, user_id: int):
+    get_user(db, user_id)
+
+    user_repository.delete_user(db, user_id)
+
+    return {"message": "Usuário removido com sucesso"}

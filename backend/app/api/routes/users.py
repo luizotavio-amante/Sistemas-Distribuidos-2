@@ -1,86 +1,69 @@
-from fastapi import APIRouter, HTTPException, Query
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
+from app.database.session import get_db
 from app.schemas.user import User, UserCreate, UserPatch
-from app.services.user import (
-    create_user,
-    delete_user,
-    get_user,
-    get_users,
-    patch_user,
-    update_user,
-)
+from app.services import user as user_service
 
-router = APIRouter()
+DatabaseSession = Annotated[Session, Depends(get_db)]
+
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+)
 
 
 @router.get("/", response_model=list[User])
 def list_users(
-    name: str | None = Query(default=None),
+    db: DatabaseSession,
+    name: str | None = None,
 ):
-    users = get_users()
-
-    if name:
-        users = [user for user in users if name.lower() in user.name.lower()]
-
-    return users
+    return user_service.get_users(db, name)
 
 
 @router.get("/{user_id}", response_model=User)
-def find_user(user_id: int):
-    user = get_user(user_id)
-
-    if user is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Usuário não encontrado",
-        )
-
-    return user
+def get_user(
+    user_id: int,
+    db: DatabaseSession,
+):
+    return user_service.get_user(db, user_id)
 
 
-@router.post("/", response_model=User, status_code=201)
-def create(user: UserCreate):
-    return create_user(user)
+@router.post(
+    "/",
+    response_model=User,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_user(
+    user: UserCreate,
+    db: DatabaseSession,
+):
+    return user_service.create_user(db, user)
 
 
 @router.put("/{user_id}", response_model=User)
-def update(user_id: int, user: UserCreate):
-    updated_user = update_user(
-        user_id,
-        user.name,
-        user.email,
-    )
-
-    if updated_user is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Usuário não encontrado",
-        )
-
-    return updated_user
+def update_user(
+    user_id: int,
+    user: UserCreate,
+    db: DatabaseSession,
+):
+    return user_service.update_user(db, user_id, user)
 
 
 @router.patch("/{user_id}", response_model=User)
-def partial_update(user_id: int, data: UserPatch):
-    updated_user = patch_user(user_id, data)
-
-    if updated_user is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Usuário não encontrado",
-        )
-
-    return updated_user
+def patch_user(
+    user_id: int,
+    user: UserPatch,
+    db: DatabaseSession,
+):
+    return user_service.patch_user(db, user_id, user)
 
 
 @router.delete("/{user_id}")
-def remove(user_id: int):
-    deleted = delete_user(user_id)
-
-    if not deleted:
-        raise HTTPException(
-            status_code=404,
-            detail="Usuário não encontrado",
-        )
-
-    return {"message": "Usuário removido com sucesso"}
+def delete_user(
+    user_id: int,
+    db: DatabaseSession,
+):
+    return user_service.delete_user(db, user_id)
