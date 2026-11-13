@@ -1,5 +1,5 @@
+
 services:
-  
   api:
     build:
       context: ./backend
@@ -8,17 +8,59 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://app:app@db:5432/app
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
     depends_on:
-      - db    
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=5)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   db:
     image: postgres:16
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_DB: app
       POSTGRES_USER: app
-      POSTGRES_PASSWORD: app  
+      POSTGRES_PASSWORD: app
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pg_isready -U app -d app"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: "http://localhost:8000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "node -e \"require('http').get('http://localhost:5173/', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\""
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
 volumes:
-  postgres_data:            
+  postgres_data:

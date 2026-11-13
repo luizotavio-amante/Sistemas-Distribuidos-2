@@ -1,3 +1,4 @@
+
 FROM python:3.12.7-slim
 
 WORKDIR /app
@@ -7,11 +8,16 @@ ENV PYTHONUNBUFFERED=1
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install --no cache-dir poetry \
+RUN pip install --no-cache-dir poetry \
     && poetry config virtualenvs.create false \
-    && poetry install --only main --no interaction --no ansi
+    && poetry install --only main --no-root --no-interaction --no-ansi
 
+# Copiar o código da aplicação
 COPY app ./app
+
+# Copiar configurações e migrations do Alembic
+COPY alembic.ini ./alembic.ini
+COPY alembic ./alembic
 
 EXPOSE 8000
 
