@@ -1,4 +1,3 @@
-
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -14,7 +13,6 @@ def make_user(user_id=1, name="Luiz", email="luiz@email.com"):
     mock_user.name = name
     mock_user.email = email
     return mock_user
-
 
 
 @patch("app.services.user.user_repository")
@@ -59,9 +57,7 @@ def test_get_users(repository):
 def test_update_user(repository):
     repository.get_user_by_id.return_value = make_user()
     repository.get_user_by_email.return_value = None
-    repository.update_user.return_value = make_user(
-        1, "Luiz Otavio", "novo@email.com"
-    )
+    repository.update_user.return_value = make_user(1, "Luiz Otavio", "novo@email.com")
 
     data = UserCreate(
         name="Luiz Otavio",
@@ -77,9 +73,7 @@ def test_update_user(repository):
 @patch("app.services.user.user_repository")
 def test_patch_user(repository):
     repository.get_user_by_id.return_value = make_user()
-    repository.update_user.return_value = make_user(
-        1, "Luiz Otavio", "luiz@email.com"
-    )
+    repository.update_user.return_value = make_user(1, "Luiz Otavio", "luiz@email.com")
 
     updated_user = user.patch_user(
         MagicMock(),
