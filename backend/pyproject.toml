@@ -1,0 +1,28 @@
+[project]
+name = "stockflow-backend"
+version = "0.1.0"
+description = "API de controle de estoque e vendas"
+authors = [
+    {name = "Luiz Otavio Sales",email = "luiz.alves@ges.inatel.br"}
+]
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "fastapi (>=0.163.1,<0.164.0)",
+    "uvicorn (>=0.54.0,<0.55.0)",
+    "sqlalchemy (>=2.1.8,<3.0.0)",
+    "psycopg[binary] (>=3.3.9,<4.0.0)",
+    "alembic (>=1.20.1,<2.0.0)",
+    "pydantic-settings (>=2.16.3,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.2.0,<10.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "ruff (>=0.17.5,<0.18.0)"
+]

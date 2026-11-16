@@ -1,0 +1,22 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Variáveis de ambiente
+.env
+.env.*
+
+!.env.example
+
+# Frontend
+node_modules/
+dist/
+coverage/
+
+# IDE
+.vscode/
+.idea/
