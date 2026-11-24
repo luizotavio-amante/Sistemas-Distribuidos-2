@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 
 from app.api.routes.products import router as products_router
