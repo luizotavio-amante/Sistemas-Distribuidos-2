@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.product import Product
+from app.models.sale_item import SaleItem
 from app.schemas.product import ProductCreate, ProductUpdate
 
 
@@ -41,3 +42,10 @@ class ProductRepository:
     def delete(self, product: Product) -> None:
         self.db.delete(product)
         self.db.commit()
+
+    def has_sales(self, product_id: int) -> bool:
+        statement = (
+            select(SaleItem.id).where(SaleItem.product_id == product_id).limit(1)
+        )
+
+        return self.db.scalar(statement) is not None

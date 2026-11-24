@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.product import Product
@@ -37,4 +38,20 @@ class ProductService:
 
     def delete_product(self, product_id: int) -> None:
         product = self.get_product(product_id)
-        self.repository.delete(product)
+
+        if self.repository.has_sales(product_id):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Não é possível excluir um produto vinculado a vendas",
+            )
+
+        try:
+            self.repository.delete(product)
+
+        except IntegrityError as error:
+            self.repository.db.rollback()
+
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Não é possível excluir um produto vinculado a vendas",
+            ) from error

@@ -93,7 +93,19 @@ def test_update_product(service, product):
 
 def test_delete_product(service, product):
     service.repository.get_by_id.return_value = product
+    service.repository.has_sales.return_value = False
 
     service.delete_product(1)
 
     service.repository.delete.assert_called_once_with(product)
+
+
+def test_delete_product_with_sales(service, product):
+    service.repository.get_by_id.return_value = product
+    service.repository.has_sales.return_value = True
+
+    with pytest.raises(HTTPException) as error:
+        service.delete_product(1)
+
+    assert error.value.status_code == 409
+    service.repository.delete.assert_not_called()
