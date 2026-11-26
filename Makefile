@@ -1,4 +1,4 @@
-.PHONY: help install up up-build down restart build ps logs logs-api logs-frontend migrate test test-backend lint lint-backend lint-frontend format-backend build-frontend check-all
+.PHONY: help install up up-build down restart build ps logs logs-api logs-frontend migrate test test-backend test-frontend lint lint-backend lint-frontend format-backend build-frontend check-all
 
 POETRY := poetry -C backend
 PYTEST := $(POETRY) run python -m pytest
@@ -20,6 +20,7 @@ help:
 	@echo "  make migrate        - Executa as migrations"
 	@echo "  make test           - Executa os testes disponiveis"
 	@echo "  make test-backend   - Executa os testes do backend"
+	@echo "  make test-frontend  - Executa os testes do frontend"
 	@echo "  make lint           - Valida o backend e o frontend"
 	@echo "  make format-backend - Formata o backend"
 	@echo "  make build-frontend - Gera o build do frontend"
@@ -62,7 +63,10 @@ migrate:
 test-backend:
 	$(PYTEST) tests -v
 
-test: test-backend
+test-frontend:
+	$(NPM) run test
+
+test: test-backend test-frontend
 
 lint-backend:
 	$(RUFF) check .
