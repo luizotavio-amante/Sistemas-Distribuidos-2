@@ -42,11 +42,7 @@ a:hover {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: linear-gradient(
-    135deg,
-    #0f172a,
-    #1e3a8a
-  );
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
 }
 
 .auth-card {

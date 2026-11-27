@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Products from "../pages/Products";
 
 describe("Página de produtos", () => {
@@ -14,15 +14,11 @@ describe("Página de produtos", () => {
   });
 
   it("deve exibir o estado de carregamento", () => {
-    fetch.mockImplementation(
-      () => new Promise(() => {})
-    );
+    fetch.mockImplementation(() => new Promise(() => {}));
 
     render(<Products />);
 
-    expect(
-      screen.getByText("Carregando produtos...")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Carregando produtos...")).toBeInTheDocument();
   });
 
   it("deve exibir os produtos retornados pela API", async () => {
@@ -49,13 +45,9 @@ describe("Página de produtos", () => {
 
     render(<Products />);
 
-    expect(
-      await screen.findByText("Coxinha")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Coxinha")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Pastel")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Pastel")).toBeInTheDocument();
   });
 
   it("deve exibir uma mensagem quando não existem produtos", async () => {
@@ -67,9 +59,7 @@ describe("Página de produtos", () => {
 
     render(<Products />);
 
-    expect(
-      await screen.findByText(/Nenhum produto encontrado/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Nenhum produto encontrado/i)).toBeInTheDocument();
   });
 
   it("deve exibir uma mensagem de erro quando a API falhar", async () => {
@@ -83,8 +73,6 @@ describe("Página de produtos", () => {
 
     render(<Products />);
 
-    expect(
-      await screen.findByText("Erro ao carregar produtos")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Erro ao carregar produtos")).toBeInTheDocument();
   });
 });

@@ -1,0 +1,156 @@
+name: StockFlow CI
+
+on:
+  push:
+    branches:
+      - projeto-final
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend - Ruff e Pytest
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+
+        env:
+          POSTGRES_USER: stockflow
+          POSTGRES_PASSWORD: stockflow
+          POSTGRES_DB: stockflow_test
+
+        ports:
+          - 5433:5432
+
+        options: >-
+          --health-cmd "pg_isready -U stockflow -d stockflow_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql+psycopg://stockflow:stockflow@localhost:5433/stockflow_test
+      TEST_DATABASE_URL: postgresql+psycopg://stockflow:stockflow@localhost:5433/stockflow_test
+      JWT_SECRET_KEY: stockflow-ci-test-secret-key-not-for-production
+
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Poetry
+        run: pip install "poetry>=2,<3"
+
+      - name: Instalar dependencias
+        run: poetry -C backend install --no-root
+
+      - name: Validar codigo com Ruff
+        run: poetry -C backend run ruff check .
+
+      - name: Validar formatacao com Ruff
+        run: poetry -C backend run ruff format --check .
+
+      - name: Executar testes Pytest
+        run: poetry -C backend run python -m pytest tests -v
+
+  frontend:
+    name: Frontend - ESLint, Biome e Vitest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar codigo com ESLint
+        run: npm run lint
+
+      - name: Validar codigo com Biome
+        run: npm run biome:check
+
+      - name: Executar testes Vitest
+        run: npm run test
+
+      - name: Gerar build do frontend
+        run: npm run build
+
+  e2e:
+    name: E2E - Docker e Playwright
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Configurar variaveis de ambiente
+        run: |
+          cp .env.example .env
+          sed -i "s/^JWT_SECRET_KEY=.*/JWT_SECRET_KEY=$(openssl rand -hex 32)/" .env
+
+      - name: Iniciar containers
+        run: docker compose up -d --build --wait
+
+      - name: Verificar containers
+        run: docker compose ps
+
+      - name: Instalar dependencias do frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: Instalar Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Executar testes Playwright
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - name: Salvar relatorio Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+
+      - name: Exibir logs em caso de falha
+        if: failure()
+        run: docker compose logs
+
+      - name: Encerrar containers
+        if: always()
+        run: docker compose down -v

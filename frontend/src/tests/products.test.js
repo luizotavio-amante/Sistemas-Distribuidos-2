@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { listProducts, createProduct } from "../services/products";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createProduct, listProducts } from "../services/products";
 
 describe("Serviço de produtos", () => {
   beforeEach(() => {
@@ -64,7 +64,7 @@ describe("Serviço de produtos", () => {
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify(product),
-      })
+      }),
     );
   });
 
@@ -77,19 +77,13 @@ describe("Serviço de produtos", () => {
       }),
     });
 
-    await expect(listProducts()).rejects.toThrow(
-      "Erro ao carregar produtos"
-    );
+    await expect(listProducts()).rejects.toThrow("Erro ao carregar produtos");
   });
 
   it("deve tratar falhas de conexão", async () => {
-    fetch.mockRejectedValueOnce(
-      new Error("Falha na conexão")
-    );
+    fetch.mockRejectedValueOnce(new Error("Falha na conexão"));
 
-    await expect(listProducts()).rejects.toThrow(
-      "Falha na conexão"
-    );
+    await expect(listProducts()).rejects.toThrow("Falha na conexão");
   });
 
   it("deve enviar o token de autenticação", async () => {
@@ -109,7 +103,7 @@ describe("Serviço de produtos", () => {
         headers: expect.objectContaining({
           Authorization: "Bearer token-teste",
         }),
-      })
+      }),
     );
   });
 });

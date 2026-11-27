@@ -1,71 +1,42 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import ProductForm from "../components/ProductForm";
 
 describe("ProductForm", () => {
   it("deve renderizar os campos do formulário", () => {
-    render(
-      <ProductForm
-        onSubmit={vi.fn()}
-        onCancel={vi.fn()}
-        saving={false}
-      />
-    );
+    render(<ProductForm onSubmit={vi.fn()} onCancel={vi.fn()} saving={false} />);
 
-    expect(
-      screen.getByLabelText("Nome do produto")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Nome do produto")).toBeInTheDocument();
 
-    expect(
-      screen.getByLabelText("Preço (R$)")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Preço (R$)")).toBeInTheDocument();
 
-    expect(
-      screen.getByLabelText("Quantidade em estoque")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Quantidade em estoque")).toBeInTheDocument();
 
-    expect(
-      screen.getByLabelText("Estoque mínimo")
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Estoque mínimo")).toBeInTheDocument();
   });
 
   it("deve cadastrar um produto com os dados informados", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(
-      <ProductForm
-        onSubmit={onSubmit}
-        onCancel={vi.fn()}
-        saving={false}
-      />
-    );
+    render(<ProductForm onSubmit={onSubmit} onCancel={vi.fn()} saving={false} />);
 
-    await user.type(
-      screen.getByLabelText("Nome do produto"),
-      "Coxinha"
-    );
+    await user.type(screen.getByLabelText("Nome do produto"), "Coxinha");
 
     const price = screen.getByLabelText("Preço (R$)");
     await user.clear(price);
     await user.type(price, "7.50");
 
-    const quantity = screen.getByLabelText(
-      "Quantidade em estoque"
-    );
+    const quantity = screen.getByLabelText("Quantidade em estoque");
     await user.clear(quantity);
     await user.type(quantity, "20");
 
-    const minimumStock = screen.getByLabelText(
-      "Estoque mínimo"
-    );
+    const minimumStock = screen.getByLabelText("Estoque mínimo");
     await user.clear(minimumStock);
     await user.type(minimumStock, "5");
 
-    await user.click(
-      screen.getByRole("button", { name: "Salvar produto" })
-    );
+    await user.click(screen.getByRole("button", { name: "Salvar produto" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
 
@@ -81,17 +52,9 @@ describe("ProductForm", () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
 
-    render(
-      <ProductForm
-        onSubmit={vi.fn()}
-        onCancel={onCancel}
-        saving={false}
-      />
-    );
+    render(<ProductForm onSubmit={vi.fn()} onCancel={onCancel} saving={false} />);
 
-    await user.click(
-      screen.getByRole("button", { name: "Cancelar" })
-    );
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
   });

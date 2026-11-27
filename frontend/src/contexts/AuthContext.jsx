@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-
-import { AuthContext } from "./auth-context";
-
 import {
+  getCurrentUser,
   login as loginRequest,
   register as registerRequest,
-  getCurrentUser,
 } from "../services/auth";
+import { AuthContext } from "./auth-context";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -38,10 +36,7 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     const data = await loginRequest(email, password);
 
-    sessionStorage.setItem(
-      "stockflow_token",
-      data.access_token
-    );
+    sessionStorage.setItem("stockflow_token", data.access_token);
 
     try {
       const currentUser = await getCurrentUser();

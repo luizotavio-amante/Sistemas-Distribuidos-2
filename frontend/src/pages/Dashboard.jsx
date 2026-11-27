@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
-
 import {
-  Package,
   Boxes,
-  TriangleAlert,
-  ShoppingCart,
-  Wallet,
   CalendarDays,
+  Package,
   RefreshCw,
+  ShoppingCart,
+  TriangleAlert,
+  Wallet,
 } from "lucide-react";
-
+import { useCallback, useEffect, useState } from "react";
+import StatCard from "../components/StatCard";
 import { useAuth } from "../contexts/useAuth";
 import { getDashboard } from "../services/dashboard";
-import StatCard from "../components/StatCard";
 
 function formatCurrency(value) {
   return Number(value).toLocaleString("pt-BR", {
@@ -28,7 +26,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadDashboard() {
+  const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -40,11 +38,11 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadDashboard();
-  }, []);
+  }, [loadDashboard]);
 
   return (
     <div>
@@ -52,13 +50,11 @@ export default function Dashboard() {
         <div>
           <h1>Dashboard</h1>
 
-          <p>
-            Bem-vindo, {user?.name}! Acompanhe os indicadores
-            do seu negócio.
-          </p>
+          <p>Bem-vindo, {user?.name}! Acompanhe os indicadores do seu negócio.</p>
         </div>
 
         <button
+          type="button"
           className="secondary-button"
           onClick={loadDashboard}
           disabled={loading}
@@ -140,9 +136,8 @@ export default function Dashboard() {
                 <strong>Atenção ao estoque!</strong>
 
                 <p>
-                  Existem {data.low_stock_products} produto(s)
-                  com quantidade igual ou inferior ao estoque
-                  mínimo.
+                  Existem {data.low_stock_products} produto(s) com quantidade igual ou inferior ao
+                  estoque mínimo.
                 </p>
               </div>
             </div>

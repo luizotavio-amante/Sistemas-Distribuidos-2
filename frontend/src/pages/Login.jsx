@@ -1,6 +1,6 @@
+import { Boxes, Lock, LogIn, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Boxes, Mail, Lock, LogIn } from "lucide-react";
 
 import { useAuth } from "../contexts/useAuth";
 
@@ -39,9 +39,7 @@ export default function Login() {
         </div>
 
         <h2>Bem-vindo!</h2>
-        <p className="auth-description">
-          Entre na sua conta para continuar.
-        </p>
+        <p className="auth-description">Entre na sua conta para continuar.</p>
 
         {error && (
           <div className="error-message" role="alert">
@@ -86,19 +84,14 @@ export default function Login() {
             </div>
           </div>
 
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={loading}
-          >
+          <button className="primary-button" type="submit" disabled={loading}>
             <LogIn size={18} />
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
         <p className="auth-footer">
-          Não possui uma conta?{" "}
-          <Link to="/register">Cadastre-se</Link>
+          Não possui uma conta? <Link to="/register">Cadastre-se</Link>
         </p>
       </div>
     </div>

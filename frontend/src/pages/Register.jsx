@@ -1,6 +1,6 @@
+import { Boxes, Lock, Mail, User, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Boxes, User, Mail, Lock, UserPlus } from "lucide-react";
 
 import { useAuth } from "../contexts/useAuth";
 
@@ -50,9 +50,7 @@ export default function Register() {
 
         <h2>Criar conta</h2>
 
-        <p className="auth-description">
-          Preencha seus dados para começar.
-        </p>
+        <p className="auth-description">Preencha seus dados para começar.</p>
 
         {error && (
           <div className="error-message" role="alert">
@@ -66,10 +64,7 @@ export default function Register() {
               {success}
             </div>
 
-            <button
-              className="primary-button"
-              onClick={() => navigate("/login")}
-            >
+            <button type="button" className="primary-button" onClick={() => navigate("/login")}>
               Ir para o login
             </button>
           </>
@@ -134,9 +129,7 @@ export default function Register() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">
-                Confirmar senha
-              </label>
+              <label htmlFor="confirmPassword">Confirmar senha</label>
 
               <div className="input-wrapper">
                 <Lock size={18} />
@@ -147,19 +140,13 @@ export default function Register() {
                   placeholder="Confirme sua senha"
                   autoComplete="new-password"
                   value={confirmPassword}
-                  onChange={(event) =>
-                    setConfirmPassword(event.target.value)
-                  }
+                  onChange={(event) => setConfirmPassword(event.target.value)}
                   required
                 />
               </div>
             </div>
 
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={loading}
-            >
+            <button className="primary-button" type="submit" disabled={loading}>
               <UserPlus size={18} />
 
               {loading ? "Cadastrando..." : "Criar conta"}
@@ -168,8 +155,7 @@ export default function Register() {
         )}
 
         <p className="auth-footer">
-          Já possui uma conta?{" "}
-          <Link to="/login">Faça login</Link>
+          Já possui uma conta? <Link to="/login">Faça login</Link>
         </p>
       </div>
     </div>

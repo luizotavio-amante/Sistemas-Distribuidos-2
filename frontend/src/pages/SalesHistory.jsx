@@ -1,15 +1,7 @@
-import { useEffect, useState } from "react";
-import {
-  History,
-  Search,
-  RefreshCw,
-  Eye,
-  X,
-  ShoppingCart,
-} from "lucide-react";
-
-import { listSales } from "../services/sales";
+import { Eye, History, RefreshCw, Search, ShoppingCart, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { listProducts } from "../services/products";
+import { listSales } from "../services/sales";
 
 function formatCurrency(value) {
   return Number(value).toLocaleString("pt-BR", {
@@ -32,16 +24,13 @@ export default function SalesHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadHistory() {
+  const loadHistory = useCallback(async () => {
     setLoading(true);
     setError("");
     setSelectedSale(null);
 
     try {
-      const [salesData, productsData] = await Promise.all([
-        listSales(),
-        listProducts(),
-      ]);
+      const [salesData, productsData] = await Promise.all([listSales(), listProducts()]);
 
       setSales(salesData);
       setProducts(productsData);
@@ -50,31 +39,24 @@ export default function SalesHistory() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadHistory();
-  }, []);
+  }, [loadHistory]);
 
   function getProductName(productId) {
-    const product = products.find(
-      (item) => item.id === productId
-    );
+    const product = products.find((item) => item.id === productId);
 
     return product?.name ?? `Produto #${productId}`;
   }
 
   function getTotalItems(sale) {
-    return sale.items.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+    return sale.items.reduce((total, item) => total + item.quantity, 0);
   }
 
   const filteredSales = sales.filter((sale) =>
-    String(sale.id).includes(
-      search.trim().replace(/^#/, "")
-    )
+    String(sale.id).includes(search.trim().replace(/^#/, "")),
   );
 
   return (
@@ -83,16 +65,10 @@ export default function SalesHistory() {
         <div>
           <h1>Histórico de vendas</h1>
 
-          <p>
-            Consulte todas as vendas realizadas no sistema.
-          </p>
+          <p>Consulte todas as vendas realizadas no sistema.</p>
         </div>
 
-        <button
-          className="secondary-button"
-          onClick={loadHistory}
-          disabled={loading}
-        >
+        <button type="button" className="secondary-button" onClick={loadHistory} disabled={loading}>
           <RefreshCw size={18} />
           Atualizar
         </button>
@@ -114,9 +90,7 @@ export default function SalesHistory() {
               placeholder="Pesquisar pelo número da venda..."
               aria-label="Pesquisar venda"
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
             />
           </div>
         </div>
@@ -136,9 +110,7 @@ export default function SalesHistory() {
             <h3>Nenhuma venda encontrada</h3>
 
             <p>
-              {search
-                ? "Tente pesquisar outro número."
-                : "As vendas realizadas aparecerão aqui."}
+              {search ? "Tente pesquisar outro número." : "As vendas realizadas aparecerão aqui."}
             </p>
           </div>
         ) : (
@@ -166,13 +138,12 @@ export default function SalesHistory() {
                     <td>{getTotalItems(sale)}</td>
 
                     <td>
-                      <strong className="sale-value">
-                        {formatCurrency(sale.total)}
-                      </strong>
+                      <strong className="sale-value">{formatCurrency(sale.total)}</strong>
                     </td>
 
                     <td>
                       <button
+                        type="button"
                         className="icon-button edit-button"
                         onClick={() => setSelectedSale(sale)}
                         aria-label={`Visualizar venda ${sale.id}`}
@@ -189,9 +160,7 @@ export default function SalesHistory() {
         )}
 
         {!loading && !error && (
-          <div className="table-footer">
-            {filteredSales.length} venda(s) encontrada(s)
-          </div>
+          <div className="table-footer">{filteredSales.length} venda(s) encontrada(s)</div>
         )}
       </div>
 
@@ -205,6 +174,7 @@ export default function SalesHistory() {
             </div>
 
             <button
+              type="button"
               className="icon-button"
               onClick={() => setSelectedSale(null)}
               aria-label="Fechar detalhes"
@@ -216,9 +186,7 @@ export default function SalesHistory() {
           <div className="sale-details-info">
             <div>
               <span>Data da venda</span>
-              <strong>
-                {formatDate(selectedSale.created_at)}
-              </strong>
+              <strong>{formatDate(selectedSale.created_at)}</strong>
             </div>
 
             <div>
@@ -229,9 +197,7 @@ export default function SalesHistory() {
             <div>
               <span>Valor total</span>
 
-              <strong className="sale-value">
-                {formatCurrency(selectedSale.total)}
-              </strong>
+              <strong className="sale-value">{formatCurrency(selectedSale.total)}</strong>
             </div>
           </div>
 
@@ -249,19 +215,13 @@ export default function SalesHistory() {
               <tbody>
                 {selectedSale.items.map((item) => (
                   <tr key={item.id}>
-                    <td>
-                      {getProductName(item.product_id)}
-                    </td>
+                    <td>{getProductName(item.product_id)}</td>
 
                     <td>{item.quantity}</td>
 
-                    <td>
-                      {formatCurrency(item.unit_price)}
-                    </td>
+                    <td>{formatCurrency(item.unit_price)}</td>
 
-                    <td>
-                      {formatCurrency(item.subtotal)}
-                    </td>
+                    <td>{formatCurrency(item.subtotal)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -271,9 +231,7 @@ export default function SalesHistory() {
           <div className="sale-details-total">
             <span>Total da venda</span>
 
-            <strong>
-              {formatCurrency(selectedSale.total)}
-            </strong>
+            <strong>{formatCurrency(selectedSale.total)}</strong>
           </div>
         </div>
       )}

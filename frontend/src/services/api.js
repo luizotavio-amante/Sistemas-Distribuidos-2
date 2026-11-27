@@ -1,5 +1,4 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = sessionStorage.getItem("stockflow_token");
@@ -22,9 +21,7 @@ export async function apiRequest(endpoint, options = {}) {
     const data = await response.json().catch(() => null);
 
     const message =
-      typeof data?.detail === "string"
-        ? data.detail
-        : "Não foi possível realizar a operação.";
+      typeof data?.detail === "string" ? data.detail : "Não foi possível realizar a operação.";
 
     throw new Error(message);
   }

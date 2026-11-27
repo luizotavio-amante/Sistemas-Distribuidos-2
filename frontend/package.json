@@ -9,7 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "biome:check": "biome check ."
   },
   "dependencies": {
     "lucide-react": "^1.80.0",
@@ -18,7 +24,9 @@
     "react-router-dom": "^7.18.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.6.9",
     "@eslint/js": "^9.25.0",
+    "@playwright/test": "^1.65.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.13",

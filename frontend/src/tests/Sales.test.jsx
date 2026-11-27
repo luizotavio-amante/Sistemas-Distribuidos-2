@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Sales from "../pages/Sales";
 
 const products = [
@@ -37,9 +37,7 @@ describe("Página de vendas", () => {
       name: /Coxinha/i,
     });
 
-    expect(
-      screen.getByText(/Carrinho vazio/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Carrinho vazio/i)).toBeInTheDocument();
   });
 
   it("deve adicionar um produto ao carrinho", async () => {
@@ -51,10 +49,7 @@ describe("Página de vendas", () => {
       name: /Coxinha/i,
     });
 
-    await user.selectOptions(
-      screen.getByLabelText("Produto"),
-      "1"
-    );
+    await user.selectOptions(screen.getByLabelText("Produto"), "1");
 
     const quantity = screen.getByLabelText("Quantidade");
 
@@ -64,18 +59,16 @@ describe("Página de vendas", () => {
     await user.click(
       screen.getByRole("button", {
         name: "Adicionar ao carrinho",
-      })
+      }),
     );
 
     expect(
       screen.getByRole("button", {
         name: "Remover Coxinha",
-      })
+      }),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getAllByText(/R\$\s*15,00/).length
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/R\$\s*15,00/).length).toBeGreaterThan(0);
   });
 
   it("deve impedir quantidade superior ao estoque", async () => {
@@ -87,10 +80,7 @@ describe("Página de vendas", () => {
       name: /Coxinha/i,
     });
 
-    await user.selectOptions(
-      screen.getByLabelText("Produto"),
-      "1"
-    );
+    await user.selectOptions(screen.getByLabelText("Produto"), "1");
 
     const quantity = screen.getByLabelText("Quantidade");
 
@@ -100,17 +90,15 @@ describe("Página de vendas", () => {
     await user.click(
       screen.getByRole("button", {
         name: "Adicionar ao carrinho",
-      })
+      }),
     );
 
-    expect(
-      screen.getByRole("alert")
-    ).toHaveTextContent(/Estoque insuficiente/i);
+    expect(screen.getByRole("alert")).toHaveTextContent(/Estoque insuficiente/i);
 
     expect(
       screen.queryByRole("button", {
         name: "Remover Coxinha",
-      })
+      }),
     ).not.toBeInTheDocument();
   });
 
@@ -123,25 +111,20 @@ describe("Página de vendas", () => {
       name: /Coxinha/i,
     });
 
-    await user.selectOptions(
-      screen.getByLabelText("Produto"),
-      "1"
-    );
+    await user.selectOptions(screen.getByLabelText("Produto"), "1");
 
     await user.click(
       screen.getByRole("button", {
         name: "Adicionar ao carrinho",
-      })
+      }),
     );
 
     await user.click(
       screen.getByRole("button", {
         name: "Remover Coxinha",
-      })
+      }),
     );
 
-    expect(
-      screen.getByText(/Carrinho vazio/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Carrinho vazio/i)).toBeInTheDocument();
   });
 });

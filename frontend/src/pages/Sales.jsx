@@ -1,11 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  ShoppingCart,
-  Plus,
-  Trash2,
-  CheckCircle,
-  Package,
-} from "lucide-react";
+import { CheckCircle, Package, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { listProducts } from "../services/products";
 import { createSale } from "../services/sales";
@@ -28,7 +22,7 @@ export default function Sales() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  async function loadProducts() {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
 
     try {
@@ -39,11 +33,11 @@ export default function Sales() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [loadProducts]);
 
   function handleAddProduct(event) {
     event.preventDefault();
@@ -51,9 +45,7 @@ export default function Sales() {
     setError("");
     setSuccess("");
 
-    const product = products.find(
-      (item) => item.id === Number(selectedProduct)
-    );
+    const product = products.find((item) => item.id === Number(selectedProduct));
 
     if (!product) {
       setError("Selecione um produto.");
@@ -67,17 +59,12 @@ export default function Sales() {
       return;
     }
 
-    const existingItem = cart.find(
-      (item) => item.product_id === product.id
-    );
+    const existingItem = cart.find((item) => item.product_id === product.id);
 
-    const totalQuantity =
-      (existingItem?.quantity ?? 0) + amount;
+    const totalQuantity = (existingItem?.quantity ?? 0) + amount;
 
     if (totalQuantity > product.quantity) {
-      setError(
-        `Estoque insuficiente. Disponível: ${product.quantity} unidade(s).`
-      );
+      setError(`Estoque insuficiente. Disponível: ${product.quantity} unidade(s).`);
       return;
     }
 
@@ -89,8 +76,8 @@ export default function Sales() {
                 ...item,
                 quantity: item.quantity + amount,
               }
-            : item
-        )
+            : item,
+        ),
       );
     } else {
       setCart((currentCart) => [
@@ -109,11 +96,7 @@ export default function Sales() {
   }
 
   function removeProduct(productId) {
-    setCart((currentCart) =>
-      currentCart.filter(
-        (item) => item.product_id !== productId
-      )
-    );
+    setCart((currentCart) => currentCart.filter((item) => item.product_id !== productId));
   }
 
   function clearCart() {
@@ -123,18 +106,13 @@ export default function Sales() {
   }
 
   const totalInCents = cart.reduce(
-    (total, item) =>
-      total +
-      Math.round(Number(item.price) * 100) * item.quantity,
-    0
+    (total, item) => total + Math.round(Number(item.price) * 100) * item.quantity,
+    0,
   );
 
   const total = totalInCents / 100;
 
-  const totalItems = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   async function handleFinishSale() {
     if (cart.length === 0 || saving) {
@@ -153,9 +131,7 @@ export default function Sales() {
 
       const sale = await createSale(items);
 
-      setSuccess(
-        `Venda #${sale.id} registrada com sucesso! Total: ${formatCurrency(sale.total)}`
-      );
+      setSuccess(`Venda #${sale.id} registrada com sucesso! Total: ${formatCurrency(sale.total)}`);
 
       setCart([]);
       setSelectedProduct("");
@@ -169,18 +145,14 @@ export default function Sales() {
     }
   }
 
-  const availableProducts = products.filter(
-    (product) => product.quantity > 0
-  );
+  const availableProducts = products.filter((product) => product.quantity > 0);
 
   return (
     <div>
       <div className="page-heading">
         <div>
           <h1>Nova venda</h1>
-          <p>
-            Adicione produtos ao carrinho e registre uma venda.
-          </p>
+          <p>Adicione produtos ao carrinho e registre uma venda.</p>
         </div>
       </div>
 
@@ -211,41 +183,29 @@ export default function Sales() {
             ) : (
               <form onSubmit={handleAddProduct}>
                 <div className="form-group">
-                  <label htmlFor="sale-product">
-                    Produto
-                  </label>
+                  <label htmlFor="sale-product">Produto</label>
 
                   <select
                     id="sale-product"
                     className="form-input"
                     value={selectedProduct}
-                    onChange={(event) =>
-                      setSelectedProduct(event.target.value)
-                    }
+                    onChange={(event) => setSelectedProduct(event.target.value)}
                     disabled={saving}
                     required
                   >
-                    <option value="">
-                      Selecione um produto
-                    </option>
+                    <option value="">Selecione um produto</option>
 
                     {availableProducts.map((product) => (
-                      <option
-                        key={product.id}
-                        value={product.id}
-                      >
-                        {product.name} -{" "}
-                        {formatCurrency(product.price)} -{" "}
-                        Estoque: {product.quantity}
+                      <option key={product.id} value={product.id}>
+                        {product.name} - {formatCurrency(product.price)} - Estoque:{" "}
+                        {product.quantity}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="sale-quantity">
-                    Quantidade
-                  </label>
+                  <label htmlFor="sale-quantity">Quantidade</label>
 
                   <input
                     id="sale-quantity"
@@ -254,9 +214,7 @@ export default function Sales() {
                     min="1"
                     step="1"
                     value={quantity}
-                    onChange={(event) =>
-                      setQuantity(event.target.value)
-                    }
+                    onChange={(event) => setQuantity(event.target.value)}
                     disabled={saving}
                     required
                   />
@@ -306,24 +264,17 @@ export default function Sales() {
                           <strong>{item.name}</strong>
                         </td>
 
-                        <td>
-                          {formatCurrency(item.price)}
-                        </td>
+                        <td>{formatCurrency(item.price)}</td>
 
                         <td>{item.quantity}</td>
 
-                        <td>
-                          {formatCurrency(
-                            Number(item.price) * item.quantity
-                          )}
-                        </td>
+                        <td>{formatCurrency(Number(item.price) * item.quantity)}</td>
 
                         <td>
                           <button
+                            type="button"
                             className="icon-button delete-button"
-                            onClick={() =>
-                              removeProduct(item.product_id)
-                            }
+                            onClick={() => removeProduct(item.product_id)}
                             disabled={saving}
                             aria-label={`Remover ${item.name}`}
                           >
@@ -360,20 +311,18 @@ export default function Sales() {
           </div>
 
           <button
+            type="button"
             className="primary-button finish-sale-button"
             onClick={handleFinishSale}
-            disabled={
-              saving || loading || cart.length === 0
-            }
+            disabled={saving || loading || cart.length === 0}
           >
             <CheckCircle size={20} />
 
-            {saving
-              ? "Registrando venda..."
-              : "Finalizar venda"}
+            {saving ? "Registrando venda..." : "Finalizar venda"}
           </button>
 
           <button
+            type="button"
             className="secondary-button clear-cart-button"
             onClick={clearCart}
             disabled={saving || cart.length === 0}
@@ -383,8 +332,7 @@ export default function Sales() {
           </button>
 
           <p className="sale-info">
-            O estoque será atualizado automaticamente após
-            a confirmação da venda.
+            O estoque será atualizado automaticamente após a confirmação da venda.
           </p>
         </div>
       </div>

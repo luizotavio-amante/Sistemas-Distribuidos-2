@@ -1,21 +1,9 @@
-import { useEffect, useState } from "react";
-import {
-  Plus,
-  Search,
-  Pencil,
-  Trash2,
-  Package,
-  RefreshCw,
-} from "lucide-react";
+import { Package, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import ProductForm from "../components/ProductForm";
 
-import {
-  listProducts,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-} from "../services/products";
+import { createProduct, deleteProduct, listProducts, updateProduct } from "../services/products";
 
 function formatCurrency(value) {
   return Number(value).toLocaleString("pt-BR", {
@@ -35,7 +23,7 @@ export default function Products() {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  async function loadProducts() {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -47,11 +35,11 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [loadProducts]);
 
   function openCreateForm() {
     setEditingProduct(null);
@@ -96,9 +84,7 @@ export default function Products() {
   }
 
   async function handleDelete(product) {
-    const confirmed = window.confirm(
-      `Deseja realmente excluir o produto "${product.name}"?`
-    );
+    const confirmed = window.confirm(`Deseja realmente excluir o produto "${product.name}"?`);
 
     if (!confirmed) {
       return;
@@ -120,7 +106,7 @@ export default function Products() {
   }
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const busy = saving || deleting;
@@ -134,6 +120,7 @@ export default function Products() {
         </div>
 
         <button
+          type="button"
           className="primary-button compact-button"
           onClick={openCreateForm}
           disabled={busy}
@@ -180,6 +167,7 @@ export default function Products() {
           </div>
 
           <button
+            type="button"
             className="secondary-button"
             onClick={loadProducts}
             disabled={loading || busy}
@@ -199,11 +187,7 @@ export default function Products() {
 
             <h3>Nenhum produto encontrado</h3>
 
-            <p>
-              {search
-                ? "Tente pesquisar outro nome."
-                : "Cadastre seu primeiro produto."}
-            </p>
+            <p>{search ? "Tente pesquisar outro nome." : "Cadastre seu primeiro produto."}</p>
           </div>
         ) : (
           <div className="table-responsive">
@@ -236,21 +220,17 @@ export default function Products() {
                     <td>{product.minimum_stock}</td>
 
                     <td>
-                      {product.quantity <=
-                      product.minimum_stock ? (
-                        <span className="status-badge status-danger">
-                          Estoque baixo
-                        </span>
+                      {product.quantity <= product.minimum_stock ? (
+                        <span className="status-badge status-danger">Estoque baixo</span>
                       ) : (
-                        <span className="status-badge status-success">
-                          Normal
-                        </span>
+                        <span className="status-badge status-success">Normal</span>
                       )}
                     </td>
 
                     <td>
                       <div className="table-actions">
                         <button
+                          type="button"
                           className="icon-button edit-button"
                           onClick={() => openEditForm(product)}
                           disabled={busy}
@@ -261,6 +241,7 @@ export default function Products() {
                         </button>
 
                         <button
+                          type="button"
                           className="icon-button delete-button"
                           onClick={() => handleDelete(product)}
                           disabled={busy}
@@ -278,9 +259,7 @@ export default function Products() {
           </div>
         )}
 
-        <div className="table-footer">
-          {filteredProducts.length} produto(s) encontrado(s)
-        </div>
+        <div className="table-footer">{filteredProducts.length} produto(s) encontrado(s)</div>
       </div>
     </div>
   );

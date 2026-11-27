@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { login, register, getCurrentUser } from "../services/auth";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getCurrentUser, login, register } from "../services/auth";
 
 describe("Serviço de autenticação", () => {
   beforeEach(() => {
@@ -24,10 +24,7 @@ describe("Serviço de autenticação", () => {
       json: async () => token,
     });
 
-    const result = await login(
-      "teste@stockflow.com",
-      "Teste12345"
-    );
+    const result = await login("teste@stockflow.com", "Teste12345");
 
     expect(result).toEqual(token);
 
@@ -39,7 +36,7 @@ describe("Serviço de autenticação", () => {
           email: "teste@stockflow.com",
           password: "Teste12345",
         }),
-      })
+      }),
     );
   });
 
@@ -52,9 +49,9 @@ describe("Serviço de autenticação", () => {
       }),
     });
 
-    await expect(
-      login("teste@stockflow.com", "senhaerrada")
-    ).rejects.toThrow("E-mail ou senha inválidos");
+    await expect(login("teste@stockflow.com", "senhaerrada")).rejects.toThrow(
+      "E-mail ou senha inválidos",
+    );
   });
 
   it("deve cadastrar um novo usuário", async () => {
@@ -70,11 +67,7 @@ describe("Serviço de autenticação", () => {
       json: async () => user,
     });
 
-    const result = await register(
-      "Usuario Teste",
-      "teste@stockflow.com",
-      "Teste12345"
-    );
+    const result = await register("Usuario Teste", "teste@stockflow.com", "Teste12345");
 
     expect(result).toEqual(user);
 
@@ -87,7 +80,7 @@ describe("Serviço de autenticação", () => {
           email: "teste@stockflow.com",
           password: "Teste12345",
         }),
-      })
+      }),
     );
   });
 
@@ -100,20 +93,13 @@ describe("Serviço de autenticação", () => {
       }),
     });
 
-    await expect(
-      register(
-        "Usuario Teste",
-        "teste@stockflow.com",
-        "Teste12345"
-      )
-    ).rejects.toThrow("E-mail já cadastrado");
+    await expect(register("Usuario Teste", "teste@stockflow.com", "Teste12345")).rejects.toThrow(
+      "E-mail já cadastrado",
+    );
   });
 
   it("deve consultar o usuário autenticado", async () => {
-    sessionStorage.setItem(
-      "stockflow_token",
-      "token-teste"
-    );
+    sessionStorage.setItem("stockflow_token", "token-teste");
 
     const user = {
       id: 1,
@@ -137,7 +123,7 @@ describe("Serviço de autenticação", () => {
         headers: expect.objectContaining({
           Authorization: "Bearer token-teste",
         }),
-      })
+      }),
     );
   });
 });

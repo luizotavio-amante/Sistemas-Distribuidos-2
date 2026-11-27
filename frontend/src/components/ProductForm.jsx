@@ -1,20 +1,11 @@
-import { useState } from "react";
 import { Save, X } from "lucide-react";
+import { useState } from "react";
 
-export default function ProductForm({
-  product,
-  onSubmit,
-  onCancel,
-  saving,
-}) {
+export default function ProductForm({ product, onSubmit, onCancel, saving }) {
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price ?? "");
-  const [quantity, setQuantity] = useState(
-    product?.quantity ?? 0
-  );
-  const [minimumStock, setMinimumStock] = useState(
-    product?.minimum_stock ?? 5
-  );
+  const [quantity, setQuantity] = useState(product?.quantity ?? 0);
+  const [minimumStock, setMinimumStock] = useState(product?.minimum_stock ?? 5);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -30,9 +21,7 @@ export default function ProductForm({
   return (
     <div className="panel product-form">
       <div className="panel-heading">
-        <h2>
-          {product ? "Editar produto" : "Cadastrar produto"}
-        </h2>
+        <h2>{product ? "Editar produto" : "Cadastrar produto"}</h2>
 
         <button
           type="button"
@@ -78,9 +67,7 @@ export default function ProductForm({
           </div>
 
           <div className="form-group">
-            <label htmlFor="product-quantity">
-              Quantidade em estoque
-            </label>
+            <label htmlFor="product-quantity">Quantidade em estoque</label>
 
             <input
               id="product-quantity"
@@ -89,17 +76,13 @@ export default function ProductForm({
               min="0"
               step="1"
               value={quantity}
-              onChange={(event) =>
-                setQuantity(event.target.value)
-              }
+              onChange={(event) => setQuantity(event.target.value)}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="minimum-stock">
-              Estoque mínimo
-            </label>
+            <label htmlFor="minimum-stock">Estoque mínimo</label>
 
             <input
               id="minimum-stock"
@@ -108,21 +91,14 @@ export default function ProductForm({
               min="0"
               step="1"
               value={minimumStock}
-              onChange={(event) =>
-                setMinimumStock(event.target.value)
-              }
+              onChange={(event) => setMinimumStock(event.target.value)}
               required
             />
           </div>
         </div>
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onCancel}
-            disabled={saving}
-          >
+          <button type="button" className="secondary-button" onClick={onCancel} disabled={saving}>
             Cancelar
           </button>
 

@@ -1,12 +1,5 @@
+import { Boxes, History, LayoutDashboard, LogOut, Package, ShoppingCart } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import {
-  Boxes,
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  History,
-  LogOut,
-} from "lucide-react";
 
 import { useAuth } from "../contexts/useAuth";
 
@@ -54,9 +47,7 @@ export default function Sidebar() {
           <NavLink
             key={path}
             to={path}
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
+            className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
           >
             <Icon size={20} />
             <span>{name}</span>
@@ -65,10 +56,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <button
-          className="logout-button"
-          onClick={logout}
-        >
+        <button type="button" className="logout-button" onClick={logout}>
           <LogOut size={20} />
           Sair
         </button>

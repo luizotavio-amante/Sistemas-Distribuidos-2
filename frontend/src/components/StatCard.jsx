@@ -1,10 +1,4 @@
-export default function StatCard({
-  title,
-  value,
-  icon: Icon,
-  color = "blue",
-  description,
-}) {
+export default function StatCard({ title, value, icon: Icon, color = "blue", description }) {
   return (
     <div className="stat-card">
       <div className="stat-card-top">
