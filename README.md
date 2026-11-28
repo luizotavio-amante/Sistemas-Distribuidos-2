@@ -713,3 +713,11 @@ exigiria configurações adicionais de segurança e infraestrutura.
 
 Projeto desenvolvido para aplicação prática dos conhecimentos
 adquiridos na disciplina de Sistemas Distribuídos 2.
+
+## Vídeo demonstrativo
+
+O vídeo apresenta a arquitetura, as principais funcionalidades,
+a execução com Docker Compose, a persistência dos dados,
+os testes automatizados e a integração contínua do StockFlow.
+
+[Assistir à apresentação do StockFlow no YouTube](https://youtu.be/otQ2M2Fo29A)
